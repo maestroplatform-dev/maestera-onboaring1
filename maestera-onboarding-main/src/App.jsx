@@ -4,12 +4,12 @@ import logo from "./assets/logomaestera.jpeg";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 
 /**
- * Maestera – Teacher Onboarding (React + Tailwind)
+ * Maestera – Teacher Onboarding (React and Tailwind)
  * Steps: Intro → Basic Info → Preferences → Submit
  * Storage: posts JSON (proxied via /api/submit)
  */
 
-const SHEETS_SCRIPT_URL = "/api/submit";
+const SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-T9DVdGPRtFur5JVvg9ZHJLLhVK_5-0oMT-h5AHPgEYrpb-dGbFaU-Eveh0-IgZOm1g/exec?sheet=Part1";
 
 const INSTRUMENTS = [
   "Accordion","Acoustic Guitar","Alto Saxophone","Bagpipes","Banjo","Baritone Saxophone",
@@ -31,6 +31,17 @@ const INSTRUMENTS = [
   "Triangle","Trombone","Trumpet","Tuba","Ukulele","Upright Piano","Veena","Vibraphone",
   "Viola","Violin","Western Vocals","Xylophone","Zither"
 ];
+const LANGUAGES = [
+  "Hindi","English","Marathi","Gujarati","Tamil","Telugu","Kannada","Malayalam",
+  "Bengali","Punjabi","Odia","Assamese","Konkani","Rajasthani","Haryanvi","Sanskrit",
+  "Urdu","Sindhi","Kashmiri","Manipuri","Nepali","Bodo","Dogri","Tulu","Maithili","Santali","Mizo","Khasi","Garo",
+  "English (Indian)","English (British)","English (American)","Spanish","French","German",
+  "Italian","Portuguese","Dutch","Swedish","Norwegian","Danish","Finnish","Greek","Polish","Czech",
+  "Slovak","Hungarian","Romanian","Bulgarian","Croatian","Serbian","Slovenian","Ukrainian","Russian","Turkish","Arabic",
+  "Chinese (Mandarin)","Chinese (Cantonese)","Japanese","Korean","Thai","Vietnamese","Filipino (Tagalog)","Indonesian",
+  "Swahili","Latin","Hebrew","Persian (Farsi)","Armenian","Georgian",
+];
+
 
 const brand = {
   black: "#0a0a0a",
@@ -136,7 +147,7 @@ const StepNav = ({ step, total, onBack, onNext, canNext, submitting }) => (
   </div>
 );
 
-const SearchableDropdown = ({ value, onChange, options }) => {
+const SearchableDropdown = ({ value, onChange, options, label ="items" }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [other, setOther] = useState("");
@@ -171,7 +182,7 @@ const SearchableDropdown = ({ value, onChange, options }) => {
         className="border rounded-xl px-4 py-2.5 bg-white cursor-pointer"
         onClick={() => setOpen(!open)}
       >
-        {selected.length > 0 ? selected.join(", ") : "Select instruments"}
+        {selected.length > 0 ? selected.join(", ") : `Select ${label}`}
       </div>
 
       {open && (
@@ -179,7 +190,7 @@ const SearchableDropdown = ({ value, onChange, options }) => {
 
           <input
             className="w-full border rounded-lg p-2 mb-3"
-            placeholder="Search instrument..."
+            placeholder={`Search ${label}...`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -198,7 +209,7 @@ const SearchableDropdown = ({ value, onChange, options }) => {
           <div className="mt-3 border-t pt-3">
             <input
               className="w-full border rounded-lg p-2"
-              placeholder="Other instrument"
+              placeholder={`Search ${label}...`}
               value={other}
               onChange={(e) => setOther(e.target.value)}
             />
@@ -231,11 +242,17 @@ export default function App() {
     email: "",
     dob: "",
     instruments: "",
+    musicExperience: "",
+    teachingExperience: "",
+    performanceExperience: "",
     city: "",
     pincode: "",
     teachingFee: "",
     performanceFee: "",
     contribution: "",
+    languages: "",
+    demoClass: "",
+    consent: "",
   });
 
   const [assoc, setAssoc] = useState("Education/Teaching");
@@ -280,7 +297,9 @@ export default function App() {
       phoneOk &&
       emailOk &&
       Boolean((basic.city || "").trim()) &&
-      Boolean((basic.pincode || "").trim())
+      Boolean((basic.pincode || "").trim()) &&
+      Boolean(basic.demoClass) &&
+      Boolean(basic.consent)
     );
   }, [basic]);
 
@@ -292,8 +311,14 @@ export default function App() {
       email: basic.email || "",
       dob: basic.dob || "",
       instruments: basic.instruments || "",
+      languages: basic.languages || "",
+      musicExperience: basic.musicExperience || "",
+      teachingExperience: basic.teachingExperience || "",
+      performanceExperience: basic.performanceExperience || "",
       city: basic.city || "",
       pincode: basic.pincode || "",
+      demoClass: basic.demoClass || "",
+      consent: basic.consent || "",
       teachingFee: basic.teachingFee || "",
       performanceFee: basic.performanceFee || "",
       contribution: basic.contribution || "",
@@ -318,7 +343,7 @@ export default function App() {
         JSON.stringify({ ...payload, contribution: basic.contribution || "" })
       );
 
-      const res = await fetch(SHEETS_SCRIPT_URL, {
+      const res = await fetch("/api/submit?sheet=Part1", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -460,12 +485,25 @@ export default function App() {
               className="w-full max-w-3xl mx-auto text-center"
             >
               <h2 className="text-3xl font-semibold text-neutral-900">
-                Thank you for the response
+                Thank you for the Response!
               </h2>
               <p className="mt-3 text-neutral-700">
-                For any queries, you can reach out to us through our website or social media platforms
+                You’re now part of the Maestera musician community. Our team will reach out to you soon for any next steps or opportunities that match your profile.
               </p>
-              <p className="mt-3 text-neutral-700">We will be in touch with you!</p>
+              <p className="mt-3 text-neutral-700">If you’d like to get in touch, you can always reach us directly — we’re happy to help.</p>
+
+              <p className="mt-3 text-neutral-700 text-sm">
+                Please make sure to go through our guidelines before proceeding.
+                <br />
+                <a
+                  href="https://maestera.com/guidelines/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-rose-600 font-medium underline hover:text-rose-800"
+                >
+                  View our Teacher Guidelines
+                </a>
+              </p>
 
               {/* ✅ Social Icons instead of Button */}
               <div className="mt-8 flex justify-center gap-8">
@@ -588,7 +626,48 @@ export default function App() {
                       value={basic.instruments}
                       onChange={(v) => setBasic({ ...basic, instruments: v })}
                       options={INSTRUMENTS}
+                      label= "Instruments"
                       required
+                    />
+                  </Field>
+                  <Field label="Languages you teach in" required>
+                    <SearchableDropdown
+                      value={basic.languages}
+                      onChange={(v) => setBasic({ ...basic, languages: v })}
+                      options={LANGUAGES}
+                      label="Languages"
+                      required
+                    />
+                  </Field>
+
+                  <Field label="Music Experience (in years)" required>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 5"
+                      value={basic.musicExperience}
+                      onChange={(e) =>
+                        setBasic({ ...basic, musicExperience: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field label="Teaching Experience (in years)">
+                    <Input
+                      type="number"
+                      placeholder="e.g. 3"
+                      value={basic.teachingExperience}
+                      onChange={(e) =>
+                        setBasic({ ...basic, teachingExperience: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field label="Performance Experience (in years)">
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2"
+                      value={basic.performanceExperience}
+                      onChange={(e) =>
+                        setBasic({ ...basic, performanceExperience: e.target.value })
+                      }
                     />
                   </Field>
                   <Field label="Current City" required>
@@ -607,6 +686,73 @@ export default function App() {
                       required
                     />
                   </Field>
+                </div>
+                <div className="bg-white border border-neutral-200 rounded-2xl p-6 mb-8">
+                  <p className="font-medium text-neutral-900 mb-1">
+                    Are you open to offering a free 30-minute demo class to new students?
+                  </p>
+                  <p className="text-xs text-neutral-500 mb-4">
+                    (This helps students understand your teaching style and improves your chances of getting selected.)
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="demoClass"
+                        value="yes"
+                        checked={basic.demoClass === "yes"}
+                        onChange={() => setBasic({ ...basic, demoClass: "yes" })}
+                        className="h-5 w-5 text-rose-600"
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="demoClass"
+                        value="no"
+                        checked={basic.demoClass === "no"}
+                        onChange={() => setBasic({ ...basic, demoClass: "no" })}
+                        className="h-5 w-5 text-rose-600"
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="bg-white border border-neutral-200 rounded-2xl p-6 mb-8">
+                  <p className="font-medium text-neutral-900 mb-2">
+                    Do you agree to let Maestera use your information and media
+                    (including photos, videos, or AI/AR-generated videos) to create and publish
+                    your profile on our website, social media, and other platforms?
+                  </p>
+                  <p className="text-xs text-neutral-500 mb-4">
+                    Your data is safe with us. If you select <strong>No</strong>, don’t worry —
+                    we’ll keep your information protected and won’t use it anywhere.
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="consent"
+                        value="yes"
+                        checked={basic.consent === "yes"}
+                        onChange={() => setBasic({ ...basic, consent: "yes" })}
+                        className="h-5 w-5 text-rose-600"
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="consent"
+                        value="no"
+                        checked={basic.consent === "no"}
+                        onChange={() => setBasic({ ...basic, consent: "no" })}
+                        className="h-5 w-5 text-rose-600"
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
                 </div>
               </Section>
               {error && <p className="mt-4 text-sm font-semibold text-rose-600 text-center">{error}</p>}

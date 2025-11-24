@@ -4,7 +4,7 @@ import logo from "./assets/logomaestera.jpeg";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 
 /**
- * Maestera – Teacher Onboarding (React and Tailwind)
+ * Maestera – Teacher Onboarding (React/ Tailwind)
  * Steps: Intro → Basic Info → Preferences → Submit
  * Storage: posts JSON (proxied via /api/submit)
  */
